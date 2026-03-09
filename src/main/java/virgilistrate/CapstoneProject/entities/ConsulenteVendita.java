@@ -22,7 +22,7 @@ public class ConsulenteVendita {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToOne
     @JoinTable(name = "sede_id")
     private Sede sede;
 

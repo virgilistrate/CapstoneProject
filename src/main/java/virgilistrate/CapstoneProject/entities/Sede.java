@@ -1,4 +1,5 @@
 package virgilistrate.CapstoneProject.entities;
+import virgilistrate.CapstoneProject.entities.ConsulenteVendita;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
