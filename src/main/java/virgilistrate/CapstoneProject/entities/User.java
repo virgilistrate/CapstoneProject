@@ -26,7 +26,7 @@ public class User {
 
     private String password;
 
-    private String numeroTelefono;
+    private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     private Role role;
