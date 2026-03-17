@@ -5,9 +5,9 @@ import virgilistrate.CapstoneProject.entities.*;
 import virgilistrate.CapstoneProject.exceptions.NotFoundException;
 import virgilistrate.CapstoneProject.repositories.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 @Service
 public class VehicleService {
@@ -17,36 +17,32 @@ public class VehicleService {
     private final ModelRepository modelRepository;
     private final BodyTypeRepository bodyTypeRepository;
     private final OptionalRepository optionalRepository;
+    private final SedeRepository sedeRepository;
 
-    public VehicleService (
-
+    public VehicleService(
             VehicleRepository vehicleRepository,
             BrandRepository brandRepository,
             ModelRepository modelRepository,
             BodyTypeRepository bodyTypeRepository,
-            OptionalRepository optionalRepository
-
-    ){
-
+            OptionalRepository optionalRepository,
+            SedeRepository sedeRepository
+    ) {
         this.vehicleRepository = vehicleRepository;
         this.brandRepository = brandRepository;
         this.modelRepository = modelRepository;
         this.bodyTypeRepository = bodyTypeRepository;
         this.optionalRepository = optionalRepository;
-
+        this.sedeRepository = sedeRepository;
     }
 
-    // CREATE VEHICLE
-
-    public  Vehicle createVehicle(
+    public Vehicle createVehicle(
             Vehicle vehicle,
             Long brandId,
             Long modelId,
             Long bodyTypeId,
+            Long sedeId,
             Set<Long> optionalIds
-
-
-    ){
+    ) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found"));
 
@@ -55,56 +51,35 @@ public class VehicleService {
 
         BodyType bodyType = bodyTypeRepository.findById(bodyTypeId)
                 .orElseThrow(() -> new NotFoundException("Body Type not found"));
-        Set<Optional> optionals = Set.copyOf(optionalRepository.findAllById(optionalIds));
+
+        Sede sede = sedeRepository.findById(sedeId)
+                .orElseThrow(() -> new NotFoundException("Sede non trovata"));
+
+        Set<Optional> optionals = new HashSet<>();
+        if (optionalIds != null && !optionalIds.isEmpty()) {
+            optionals = new HashSet<>(optionalRepository.findAllById(optionalIds));
+        }
 
         vehicle.setBrand(brand);
         vehicle.setModel(model);
         vehicle.setBodyType(bodyType);
+        vehicle.setSede(sede);
         vehicle.setOptionals(optionals);
 
-return vehicleRepository.save(vehicle);
-
-
-
+        return vehicleRepository.save(vehicle);
     }
-// GET ALL VEHICLES
 
-  public List<Vehicle> getAllVehicles(){
+    public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
-
-
-  }
-
-// GET VEHICLE BY ID
+    }
 
     public Vehicle getVehicleById(Long id) {
         return vehicleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
-
     }
-
-    // UPDATE VEHICLE  --- DA FARE
-
-
-
-    // DELETE VEHICLE
 
     public void deleteVehicle(Long id) {
-        vehicleRepository.deleteById(id);
-
+        Vehicle vehicle = getVehicleById(id);
+        vehicleRepository.delete(vehicle);
     }
-
-    // FILTER BY BRAND
-    public List<Vehicle> getVehiclesByBrand(Long brandId) {
-        return vehicleRepository.findByBrandId(brandId);
-    }
-    // FILTER BY MODEL
-    public List<Vehicle> getVehiclesByModel(Long modelId) {
-        return vehicleRepository.findByModelId(modelId);
-    }
-    // FILTER BY PRICE RANGE
-    public List<Vehicle> getVehiclesByPriceRange(Double min, Double max) {
-        return vehicleRepository.findByPriceBetween(min, max);
-    }
-
 }

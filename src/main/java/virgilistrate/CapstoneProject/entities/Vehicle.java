@@ -46,7 +46,7 @@ public class Vehicle {
   private Double engineConsumption;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(name = "tractiontype",nullable = false)
   private TractionType tractiontype;
 
   private Integer vehicleLength;

@@ -28,12 +28,25 @@ public class VehicleController {
         vehicle.setKilometers(dto.kilometers());
         vehicle.setColor(dto.color());
         vehicle.setFuelType(dto.fuelType());
+        vehicle.setSeats(dto.seats());
+        vehicle.setDoorsNumber(dto.doorsNumber());
+        vehicle.setEngineCapacity(dto.engineCapacity());
+        vehicle.setEnginePower(dto.enginePower());
+        vehicle.setEngineConsumption(dto.engineConsumption());
+        vehicle.setTractiontype(dto.tractiontype());
+        vehicle.setVehicleLength(dto.vehicleLength());
+        vehicle.setVehicleWidth(dto.vehicleWidth());
+        vehicle.setVehicleHeight(dto.vehicleHeight());
+        vehicle.setTrunkSize(dto.trunkSize());
+        vehicle.setEmissionsClass(dto.emissionsClass());
+        vehicle.setCo2Emissions(dto.co2Emissions());
 
         return vehicleService.createVehicle(
                 vehicle,
                 dto.brandId(),
                 dto.modelId(),
                 dto.bodyTypeId(),
+                dto.sedeId(),
                 dto.optionalIds()
         );
     }

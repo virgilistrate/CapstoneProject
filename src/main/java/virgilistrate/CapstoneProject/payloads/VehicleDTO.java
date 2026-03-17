@@ -28,40 +28,40 @@ public record VehicleDTO(
         @NotBlank
         String fuelType,
 
-        @NotBlank
+        @NotNull
         Integer seats,
 
-        @NotBlank
+        @NotNull
         Integer doorsNumber,
 
-        @NotBlank
+        @NotNull
         Integer engineCapacity,
 
-        @NotBlank
+        @NotNull
         Integer enginePower,
 
-        @NotBlank
-        Double engineConsumtion,
+        @NotNull
+        Double engineConsumption,
 
         @NotNull
-        TractionType tractionType,
+        TractionType tractiontype,
 
-        @NotBlank
-        Integer vehicleLenght,
+        @NotNull
+        Integer vehicleLength,
 
-        @NotBlank
+        @NotNull
         Integer vehicleWidth,
 
-        @NotBlank
+        @NotNull
         Integer vehicleHeight,
 
-        @NotBlank
+        @NotNull
         Integer trunkSize,
 
         @NotBlank
         String emissionsClass,
 
-        @NotBlank
+        @NotNull
         Integer co2Emissions,
 
         @NotNull
