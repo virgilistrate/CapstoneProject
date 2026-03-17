@@ -8,6 +8,18 @@ public record SedeDTO(
         String name,
 
         @NotBlank
-        String city
+        String city,
+
+        @NotBlank
+        String adress,
+
+       @NotBlank
+       String postalCode,
+
+       @NotBlank
+       String phone,
+
+        @NotBlank
+        String email
 
 ) {}

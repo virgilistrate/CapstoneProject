@@ -34,13 +34,13 @@ public class FinanziamentoController {
 
     }
 
-    @GetMapping("/{id")
+    @GetMapping("/{id}")
     public Finanziamento getById(@PathVariable Long id){
 
         return finanziamentoService.getById(id);
 
     }
-    @GetMapping("/{id}")
+    @DeleteMapping("/{id}")
 
     public void delete(@PathVariable Long id){
 

@@ -23,6 +23,10 @@ public class SedeController {
         Sede sede = new Sede();
         sede.setName(dto.name());
         sede.setCity(dto.city());
+        sede.setAdress(dto.adress());
+        sede.setPostalCode(dto.postalCode());
+        sede.setPhone(dto.phone());
+        sede.setEmail(dto.email());
 
         return sedeService.createSede(sede);
     }
