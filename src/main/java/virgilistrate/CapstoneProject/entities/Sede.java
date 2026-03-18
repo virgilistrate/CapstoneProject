@@ -1,4 +1,5 @@
 package virgilistrate.CapstoneProject.entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import virgilistrate.CapstoneProject.entities.ConsulenteVendita;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,7 @@ public class Sede {
    @OneToMany(mappedBy = "sede")
     private List<ConsulenteVendita> consulenti;
 
+   @JsonIgnore
    @OneToMany(mappedBy = "sede")
     private List<Vehicle> vehicles;
 

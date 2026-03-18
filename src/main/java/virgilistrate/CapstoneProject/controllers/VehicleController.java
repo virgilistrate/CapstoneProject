@@ -4,12 +4,14 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import virgilistrate.CapstoneProject.entities.Vehicle;
 import virgilistrate.CapstoneProject.payloads.VehicleDTO;
+import virgilistrate.CapstoneProject.payloads.VehiclePatchDTO;
 import virgilistrate.CapstoneProject.services.VehicleService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/vehicles")
+@CrossOrigin(origins = "http://localhost:5173")
 public class VehicleController {
 
     private final VehicleService vehicleService;
@@ -19,7 +21,7 @@ public class VehicleController {
     }
 
     @PostMapping
-    public Vehicle createVehicle(@RequestBody @Valid VehicleDTO dto){
+    public Vehicle createVehicle(@RequestBody @Valid VehicleDTO dto) {
 
         Vehicle vehicle = new Vehicle();
         vehicle.setPlateNumber(dto.plateNumber());
@@ -47,22 +49,28 @@ public class VehicleController {
                 dto.modelId(),
                 dto.bodyTypeId(),
                 dto.sedeId(),
-                dto.optionalIds()
+                dto.optionalIds(),
+                dto.imageIds()
         );
     }
 
+    @PatchMapping("/{id}")
+    public Vehicle patchVehicle(@PathVariable Long id, @RequestBody VehiclePatchDTO dto) {
+        return vehicleService.patchVehicle(id, dto);
+    }
+
     @GetMapping
-    public List<Vehicle> getAll(){
+    public List<Vehicle> getAll() {
         return vehicleService.getAllVehicles();
     }
 
     @GetMapping("/{id}")
-    public Vehicle getById(@PathVariable Long id){
+    public Vehicle getById(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public void delete(@PathVariable Long id) {
         vehicleService.deleteVehicle(id);
     }
 }

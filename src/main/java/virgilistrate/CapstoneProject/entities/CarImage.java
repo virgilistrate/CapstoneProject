@@ -1,5 +1,6 @@
 package virgilistrate.CapstoneProject.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,9 +20,10 @@ public class CarImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    private String description;
+
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", nullable = false)
+    @JsonBackReference
     private Vehicle vehicle;
 }

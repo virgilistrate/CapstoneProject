@@ -3,6 +3,7 @@ package virgilistrate.CapstoneProject.services;
 import org.springframework.stereotype.Service;
 import virgilistrate.CapstoneProject.entities.*;
 import virgilistrate.CapstoneProject.exceptions.NotFoundException;
+import virgilistrate.CapstoneProject.payloads.VehiclePatchDTO;
 import virgilistrate.CapstoneProject.repositories.*;
 
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class VehicleService {
     private final BodyTypeRepository bodyTypeRepository;
     private final OptionalRepository optionalRepository;
     private final SedeRepository sedeRepository;
+    private final CarImageRepository carImageRepository;
 
     public VehicleService(
             VehicleRepository vehicleRepository,
@@ -25,7 +27,8 @@ public class VehicleService {
             ModelRepository modelRepository,
             BodyTypeRepository bodyTypeRepository,
             OptionalRepository optionalRepository,
-            SedeRepository sedeRepository
+            SedeRepository sedeRepository,
+            CarImageRepository carImageRepository
     ) {
         this.vehicleRepository = vehicleRepository;
         this.brandRepository = brandRepository;
@@ -33,6 +36,7 @@ public class VehicleService {
         this.bodyTypeRepository = bodyTypeRepository;
         this.optionalRepository = optionalRepository;
         this.sedeRepository = sedeRepository;
+        this.carImageRepository = carImageRepository;
     }
 
     public Vehicle createVehicle(
@@ -41,7 +45,8 @@ public class VehicleService {
             Long modelId,
             Long bodyTypeId,
             Long sedeId,
-            Set<Long> optionalIds
+            Set<Long> optionalIds,
+            Set<Long> imageIds
     ) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found"));
@@ -66,7 +71,150 @@ public class VehicleService {
         vehicle.setSede(sede);
         vehicle.setOptionals(optionals);
 
-        return vehicleRepository.save(vehicle);
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+
+        if (imageIds != null && !imageIds.isEmpty()) {
+            List<CarImage> images = carImageRepository.findAllById(imageIds);
+
+            for (CarImage image : images) {
+                image.setVehicle(savedVehicle);
+            }
+
+            carImageRepository.saveAll(images);
+            savedVehicle.setImages(images);
+        }
+
+        return vehicleRepository.save(savedVehicle);
+    }
+
+    public Vehicle patchVehicle(Long id, VehiclePatchDTO dto) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
+
+        if (dto.plateNumber() != null) {
+            vehicle.setPlateNumber(dto.plateNumber());
+        }
+
+        if (dto.price() != null) {
+            vehicle.setPrice(dto.price());
+        }
+
+        if (dto.yearOfConstruction() != null) {
+            vehicle.setYearOfConstruction(dto.yearOfConstruction());
+        }
+
+        if (dto.kilometers() != null) {
+            vehicle.setKilometers(dto.kilometers());
+        }
+
+        if (dto.color() != null) {
+            vehicle.setColor(dto.color());
+        }
+
+        if (dto.fuelType() != null) {
+            vehicle.setFuelType(dto.fuelType());
+        }
+
+        if (dto.seats() != null) {
+            vehicle.setSeats(dto.seats());
+        }
+
+        if (dto.doorsNumber() != null) {
+            vehicle.setDoorsNumber(dto.doorsNumber());
+        }
+
+        if (dto.engineCapacity() != null) {
+            vehicle.setEngineCapacity(dto.engineCapacity());
+        }
+
+        if (dto.enginePower() != null) {
+            vehicle.setEnginePower(dto.enginePower());
+        }
+
+        if (dto.engineConsumption() != null) {
+            vehicle.setEngineConsumption(dto.engineConsumption());
+        }
+
+        if (dto.tractiontype() != null) {
+            vehicle.setTractiontype(dto.tractiontype());
+        }
+
+        if (dto.vehicleLength() != null) {
+            vehicle.setVehicleLength(dto.vehicleLength());
+        }
+
+        if (dto.vehicleWidth() != null) {
+            vehicle.setVehicleWidth(dto.vehicleWidth());
+        }
+
+        if (dto.vehicleHeight() != null) {
+            vehicle.setVehicleHeight(dto.vehicleHeight());
+        }
+
+        if (dto.trunkSize() != null) {
+            vehicle.setTrunkSize(dto.trunkSize());
+        }
+
+        if (dto.emissionsClass() != null) {
+            vehicle.setEmissionsClass(dto.emissionsClass());
+        }
+
+        if (dto.co2Emissions() != null) {
+            vehicle.setCo2Emissions(dto.co2Emissions());
+        }
+
+        if (dto.brandId() != null) {
+            Brand brand = brandRepository.findById(dto.brandId())
+                    .orElseThrow(() -> new NotFoundException("Brand not found"));
+            vehicle.setBrand(brand);
+        }
+
+        if (dto.modelId() != null) {
+            Model model = modelRepository.findById(dto.modelId())
+                    .orElseThrow(() -> new NotFoundException("Model not found"));
+            vehicle.setModel(model);
+        }
+
+        if (dto.bodyTypeId() != null) {
+            BodyType bodyType = bodyTypeRepository.findById(dto.bodyTypeId())
+                    .orElseThrow(() -> new NotFoundException("Body Type not found"));
+            vehicle.setBodyType(bodyType);
+        }
+
+        if (dto.sedeId() != null) {
+            Sede sede = sedeRepository.findById(dto.sedeId())
+                    .orElseThrow(() -> new NotFoundException("Sede non trovata"));
+            vehicle.setSede(sede);
+        }
+
+        if (dto.optionalIds() != null) {
+            Set<Optional> optionals = new HashSet<>(optionalRepository.findAllById(dto.optionalIds()));
+            vehicle.setOptionals(optionals);
+        }
+
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+
+        if (dto.imageIds() != null) {
+            List<CarImage> currentImages = carImageRepository.findByVehicleId(vehicle.getId());
+
+            List<CarImage> imagesToDelete = currentImages.stream()
+                    .filter(img -> !dto.imageIds().contains(img.getId()))
+                    .toList();
+
+            if (!imagesToDelete.isEmpty()) {
+                carImageRepository.deleteAll(imagesToDelete);
+            }
+
+            List<CarImage> selectedImages = carImageRepository.findAllById(dto.imageIds());
+
+            for (CarImage image : selectedImages) {
+                image.setVehicle(vehicle);
+            }
+
+            carImageRepository.saveAll(selectedImages);
+            vehicle.setImages(selectedImages);
+        }
+        return vehicleRepository.save(savedVehicle);
     }
 
     public List<Vehicle> getAllVehicles() {

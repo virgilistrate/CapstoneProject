@@ -1,5 +1,6 @@
 package virgilistrate.CapstoneProject.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import virgilistrate.CapstoneProject.enums.TractionType;
@@ -93,6 +94,7 @@ public class Vehicle {
 
   // IMMAGINI
   @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+  @JsonManagedReference
   private List<CarImage> images;
 
   // MANUTENZIONI
