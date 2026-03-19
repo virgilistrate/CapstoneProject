@@ -9,7 +9,8 @@ import virgilistrate.CapstoneProject.services.BodyTypeService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bodytypes")
+@RequestMapping("/body-types")
+@CrossOrigin(origins = "http://localhost:5173")
 public class BodyTypeController {
 
     private final BodyTypeService bodyTypeService;

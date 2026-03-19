@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/optionals")
+@CrossOrigin(origins = "http://localhost:5173")
 public class OptionalController {
 
     private final OptionalService optionalService;

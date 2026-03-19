@@ -1,7 +1,5 @@
 package virgilistrate.CapstoneProject.payloads;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import virgilistrate.CapstoneProject.enums.TractionType;
 
@@ -76,16 +74,9 @@ public record VehicleDTO(
         @NotNull
         Long sedeId,
 
-
         Set<Long> optionalIds,
-
-         Set<Long> imageIds,
-
+        Set<Long> imageIds,
+        Set<String> imageUrls,
         Set<Long> maintenanceIds
-
-
-
-
-
 
 ) {}

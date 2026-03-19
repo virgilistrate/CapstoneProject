@@ -29,6 +29,7 @@ public record VehiclePatchDTO(
         Long bodyTypeId,
         Long sedeId,
         Set<Long> optionalIds,
-        Set<Long> imageIds
+        Set<Long> imageIds,
+        Set<String> imageUrls
 
 ) {}

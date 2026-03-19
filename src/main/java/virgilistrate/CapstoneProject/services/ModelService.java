@@ -23,8 +23,7 @@ public class ModelService {
         this.brandRepository = brandRepository;
     }
 
-    public Model createModel(Long brandId, String name){
-
+    public Model createModel(Long brandId, String name) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found"));
 
@@ -35,16 +34,20 @@ public class ModelService {
         return modelRepository.save(m);
     }
 
-    public List<Model> getAll(){
+    public List<Model> getAll() {
         return modelRepository.findAll();
     }
 
-    public Model getById(Long id){
+    public List<Model> getByBrandId(Long brandId) {
+        return modelRepository.findByBrandId(brandId);
+    }
+
+    public Model getById(Long id) {
         return modelRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Model not found"));
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         modelRepository.deleteById(id);
     }
 }

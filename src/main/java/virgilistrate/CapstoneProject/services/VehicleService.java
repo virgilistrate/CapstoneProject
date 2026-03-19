@@ -1,10 +1,12 @@
 package virgilistrate.CapstoneProject.services;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import virgilistrate.CapstoneProject.entities.*;
 import virgilistrate.CapstoneProject.exceptions.NotFoundException;
 import virgilistrate.CapstoneProject.payloads.VehiclePatchDTO;
 import virgilistrate.CapstoneProject.repositories.*;
+import virgilistrate.CapstoneProject.specifications.VehicleSpecification;
 
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +48,8 @@ public class VehicleService {
             Long bodyTypeId,
             Long sedeId,
             Set<Long> optionalIds,
-            Set<Long> imageIds
+            Set<Long> imageIds,
+            Set<String> imageUrls
     ) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found"));
@@ -74,14 +77,29 @@ public class VehicleService {
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
 
         if (imageIds != null && !imageIds.isEmpty()) {
-            List<CarImage> images = carImageRepository.findAllById(imageIds);
-
-            for (CarImage image : images) {
+            List<CarImage> existingImages = carImageRepository.findAllById(imageIds);
+            for (CarImage image : existingImages) {
                 image.setVehicle(savedVehicle);
             }
+            carImageRepository.saveAll(existingImages);
+            savedVehicle.setImages(existingImages);
+        }
 
-            carImageRepository.saveAll(images);
-            savedVehicle.setImages(images);
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            List<CarImage> newImages = imageUrls.stream()
+                    .filter(url -> url != null && !url.isBlank())
+                    .map(url -> {
+                        CarImage image = new CarImage();
+                        image.setImageUrl(url.trim());
+                        image.setVehicle(savedVehicle);
+                        return image;
+                    })
+                    .toList();
+
+            if (!newImages.isEmpty()) {
+                List<CarImage> savedImages = carImageRepository.saveAll(newImages);
+                savedVehicle.setImages(savedImages);
+            }
         }
 
         return vehicleRepository.save(savedVehicle);
@@ -91,77 +109,24 @@ public class VehicleService {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
-        if (dto.plateNumber() != null) {
-            vehicle.setPlateNumber(dto.plateNumber());
-        }
-
-        if (dto.price() != null) {
-            vehicle.setPrice(dto.price());
-        }
-
-        if (dto.yearOfConstruction() != null) {
-            vehicle.setYearOfConstruction(dto.yearOfConstruction());
-        }
-
-        if (dto.kilometers() != null) {
-            vehicle.setKilometers(dto.kilometers());
-        }
-
-        if (dto.color() != null) {
-            vehicle.setColor(dto.color());
-        }
-
-        if (dto.fuelType() != null) {
-            vehicle.setFuelType(dto.fuelType());
-        }
-
-        if (dto.seats() != null) {
-            vehicle.setSeats(dto.seats());
-        }
-
-        if (dto.doorsNumber() != null) {
-            vehicle.setDoorsNumber(dto.doorsNumber());
-        }
-
-        if (dto.engineCapacity() != null) {
-            vehicle.setEngineCapacity(dto.engineCapacity());
-        }
-
-        if (dto.enginePower() != null) {
-            vehicle.setEnginePower(dto.enginePower());
-        }
-
-        if (dto.engineConsumption() != null) {
-            vehicle.setEngineConsumption(dto.engineConsumption());
-        }
-
-        if (dto.tractiontype() != null) {
-            vehicle.setTractiontype(dto.tractiontype());
-        }
-
-        if (dto.vehicleLength() != null) {
-            vehicle.setVehicleLength(dto.vehicleLength());
-        }
-
-        if (dto.vehicleWidth() != null) {
-            vehicle.setVehicleWidth(dto.vehicleWidth());
-        }
-
-        if (dto.vehicleHeight() != null) {
-            vehicle.setVehicleHeight(dto.vehicleHeight());
-        }
-
-        if (dto.trunkSize() != null) {
-            vehicle.setTrunkSize(dto.trunkSize());
-        }
-
-        if (dto.emissionsClass() != null) {
-            vehicle.setEmissionsClass(dto.emissionsClass());
-        }
-
-        if (dto.co2Emissions() != null) {
-            vehicle.setCo2Emissions(dto.co2Emissions());
-        }
+        if (dto.plateNumber() != null) vehicle.setPlateNumber(dto.plateNumber());
+        if (dto.price() != null) vehicle.setPrice(dto.price());
+        if (dto.yearOfConstruction() != null) vehicle.setYearOfConstruction(dto.yearOfConstruction());
+        if (dto.kilometers() != null) vehicle.setKilometers(dto.kilometers());
+        if (dto.color() != null) vehicle.setColor(dto.color());
+        if (dto.fuelType() != null) vehicle.setFuelType(dto.fuelType());
+        if (dto.seats() != null) vehicle.setSeats(dto.seats());
+        if (dto.doorsNumber() != null) vehicle.setDoorsNumber(dto.doorsNumber());
+        if (dto.engineCapacity() != null) vehicle.setEngineCapacity(dto.engineCapacity());
+        if (dto.enginePower() != null) vehicle.setEnginePower(dto.enginePower());
+        if (dto.engineConsumption() != null) vehicle.setEngineConsumption(dto.engineConsumption());
+        if (dto.tractiontype() != null) vehicle.setTractiontype(dto.tractiontype());
+        if (dto.vehicleLength() != null) vehicle.setVehicleLength(dto.vehicleLength());
+        if (dto.vehicleWidth() != null) vehicle.setVehicleWidth(dto.vehicleWidth());
+        if (dto.vehicleHeight() != null) vehicle.setVehicleHeight(dto.vehicleHeight());
+        if (dto.trunkSize() != null) vehicle.setTrunkSize(dto.trunkSize());
+        if (dto.emissionsClass() != null) vehicle.setEmissionsClass(dto.emissionsClass());
+        if (dto.co2Emissions() != null) vehicle.setCo2Emissions(dto.co2Emissions());
 
         if (dto.brandId() != null) {
             Brand brand = brandRepository.findById(dto.brandId())
@@ -192,8 +157,6 @@ public class VehicleService {
             vehicle.setOptionals(optionals);
         }
 
-        Vehicle savedVehicle = vehicleRepository.save(vehicle);
-
         if (dto.imageIds() != null) {
             List<CarImage> currentImages = carImageRepository.findByVehicleId(vehicle.getId());
 
@@ -206,19 +169,65 @@ public class VehicleService {
             }
 
             List<CarImage> selectedImages = carImageRepository.findAllById(dto.imageIds());
-
             for (CarImage image : selectedImages) {
                 image.setVehicle(vehicle);
             }
-
             carImageRepository.saveAll(selectedImages);
             vehicle.setImages(selectedImages);
         }
-        return vehicleRepository.save(savedVehicle);
+
+        if (dto.imageUrls() != null) {
+            List<CarImage> currentImages = carImageRepository.findByVehicleId(vehicle.getId());
+            if (!currentImages.isEmpty()) {
+                carImageRepository.deleteAll(currentImages);
+            }
+
+            List<CarImage> newImages = dto.imageUrls().stream()
+                    .filter(url -> url != null && !url.isBlank())
+                    .map(url -> {
+                        CarImage image = new CarImage();
+                        image.setImageUrl(url.trim());
+                        image.setVehicle(vehicle);
+                        return image;
+                    })
+                    .toList();
+
+            List<CarImage> savedImages = carImageRepository.saveAll(newImages);
+            vehicle.setImages(savedImages);
+        }
+
+        return vehicleRepository.save(vehicle);
     }
 
     public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
+    }
+
+    public List<Vehicle> filterVehicles(
+            String search,
+            Long brandId,
+            Long modelId,
+            String color,
+            String fuelType,
+            Double minPrice,
+            Double maxPrice,
+            Integer minYear,
+            Integer maxYear,
+            Integer maxKm
+    ) {
+        Specification<Vehicle> spec = Specification
+                .where(VehicleSpecification.matchesSearch(search))
+                .and(VehicleSpecification.hasBrandId(brandId))
+                .and(VehicleSpecification.hasModelId(modelId))
+                .and(VehicleSpecification.hasColor(color))
+                .and(VehicleSpecification.hasFuelType(fuelType))
+                .and(VehicleSpecification.priceGreaterThanOrEqual(minPrice))
+                .and(VehicleSpecification.priceLessThanOrEqual(maxPrice))
+                .and(VehicleSpecification.yearGreaterThanOrEqual(minYear))
+                .and(VehicleSpecification.yearLessThanOrEqual(maxYear))
+                .and(VehicleSpecification.kilometersLessThanOrEqual(maxKm));
+
+        return vehicleRepository.findAll(spec);
     }
 
     public Vehicle getVehicleById(Long id) {

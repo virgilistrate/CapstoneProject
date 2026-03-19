@@ -22,7 +22,6 @@ public class VehicleController {
 
     @PostMapping
     public Vehicle createVehicle(@RequestBody @Valid VehicleDTO dto) {
-
         Vehicle vehicle = new Vehicle();
         vehicle.setPlateNumber(dto.plateNumber());
         vehicle.setPrice(dto.price());
@@ -50,7 +49,8 @@ public class VehicleController {
                 dto.bodyTypeId(),
                 dto.sedeId(),
                 dto.optionalIds(),
-                dto.imageIds()
+                dto.imageIds(),
+                dto.imageUrls()
         );
     }
 
@@ -62,6 +62,33 @@ public class VehicleController {
     @GetMapping
     public List<Vehicle> getAll() {
         return vehicleService.getAllVehicles();
+    }
+
+    @GetMapping("/filter")
+    public List<Vehicle> filterVehicles(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long brandId,
+            @RequestParam(required = false) Long modelId,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String fuelType,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Integer minYear,
+            @RequestParam(required = false) Integer maxYear,
+            @RequestParam(required = false) Integer maxKm
+    ) {
+        return vehicleService.filterVehicles(
+                search,
+                brandId,
+                modelId,
+                color,
+                fuelType,
+                minPrice,
+                maxPrice,
+                minYear,
+                maxYear,
+                maxKm
+        );
     }
 
     @GetMapping("/{id}")
