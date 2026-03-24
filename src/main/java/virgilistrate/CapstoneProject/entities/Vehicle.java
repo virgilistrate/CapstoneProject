@@ -21,6 +21,9 @@ public class Vehicle {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
+  private Boolean sold = false;
+
   @Column(unique = true, nullable = false)
   private String plateNumber;
 
@@ -94,11 +97,12 @@ public class Vehicle {
 
   // IMMAGINI
   @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
-  @JsonManagedReference
+  @JsonManagedReference("vehicle-images")
   private List<CarImage> images;
 
   // MANUTENZIONI
   @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+  @JsonManagedReference("vehicle-maintenances")
   private List<Maintenance> maintenances;
 
   // ORDINI

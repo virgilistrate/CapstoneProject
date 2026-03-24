@@ -23,7 +23,7 @@ public class CarImage {
 
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "vehicle_id")
+    @JsonBackReference("vehicle-images")
     private Vehicle vehicle;
 }

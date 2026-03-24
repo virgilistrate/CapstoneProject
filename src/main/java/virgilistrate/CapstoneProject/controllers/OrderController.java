@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
+@CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
 
     private final OrderService orderService;
@@ -20,7 +21,6 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody @Valid OrderDTO dto){
-
         return orderService.createOrder(
                 dto.clientId(),
                 dto.vehicleId(),

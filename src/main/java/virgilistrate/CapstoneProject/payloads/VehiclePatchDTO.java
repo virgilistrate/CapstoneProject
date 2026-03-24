@@ -7,6 +7,7 @@ import java.util.Set;
 public record VehiclePatchDTO(
 
         String plateNumber,
+        Boolean sold,
         Double price,
         Integer yearOfConstruction,
         Integer kilometers,

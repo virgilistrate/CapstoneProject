@@ -14,6 +14,9 @@ public class VehicleSpecification {
         return (root, query, cb) ->
                 modelId == null ? null : cb.equal(root.get("model").get("id"), modelId);
     }
+    public static Specification<Vehicle> isNotSold() {
+        return (root, query, cb) -> cb.isFalse(root.get("sold"));
+    }
 
     public static Specification<Vehicle> hasColor(String color) {
         return (root, query, cb) ->

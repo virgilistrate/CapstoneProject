@@ -110,6 +110,9 @@ public class VehicleService {
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         if (dto.plateNumber() != null) vehicle.setPlateNumber(dto.plateNumber());
+        if (dto.sold() != null) {
+            vehicle.setSold(dto.sold());
+        }
         if (dto.price() != null) vehicle.setPrice(dto.price());
         if (dto.yearOfConstruction() != null) vehicle.setYearOfConstruction(dto.yearOfConstruction());
         if (dto.kilometers() != null) vehicle.setKilometers(dto.kilometers());
@@ -216,7 +219,8 @@ public class VehicleService {
             Integer maxKm
     ) {
         Specification<Vehicle> spec = Specification
-                .where(VehicleSpecification.matchesSearch(search))
+                .where(VehicleSpecification.isNotSold())
+                .and(VehicleSpecification.matchesSearch(search))
                 .and(VehicleSpecification.hasBrandId(brandId))
                 .and(VehicleSpecification.hasModelId(modelId))
                 .and(VehicleSpecification.hasColor(color))
