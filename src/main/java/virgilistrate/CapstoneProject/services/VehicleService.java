@@ -210,6 +210,7 @@ public class VehicleService {
             String search,
             Long brandId,
             Long modelId,
+            Long bodyTypeId,
             String color,
             String fuelType,
             Double minPrice,
@@ -223,6 +224,7 @@ public class VehicleService {
                 .and(VehicleSpecification.matchesSearch(search))
                 .and(VehicleSpecification.hasBrandId(brandId))
                 .and(VehicleSpecification.hasModelId(modelId))
+                .and(VehicleSpecification.hasBodyTypeId(bodyTypeId))
                 .and(VehicleSpecification.hasColor(color))
                 .and(VehicleSpecification.hasFuelType(fuelType))
                 .and(VehicleSpecification.priceGreaterThanOrEqual(minPrice))
