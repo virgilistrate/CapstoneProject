@@ -1,8 +1,10 @@
 package virgilistrate.CapstoneProject.controllers;
 
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import virgilistrate.CapstoneProject.entities.TestDrive;
+import virgilistrate.CapstoneProject.entities.User;
 import virgilistrate.CapstoneProject.payloads.TestDriveDTO;
 import virgilistrate.CapstoneProject.services.TestDriveService;
 
@@ -19,9 +21,12 @@ public class TestDriveController {
     }
 
     @PostMapping
-    public TestDrive createTestDrive(@RequestBody @Valid TestDriveDTO dto) {
+    public TestDrive createTestDrive(@RequestBody @Valid TestDriveDTO dto, Authentication authentication) {
+
+        User userLogged = (User) authentication.getPrincipal();
+
         return testDriveService.createTestDrive(
-                dto.clientId(),
+                userLogged.getId(),
                 dto.vehicleId()
         );
     }
