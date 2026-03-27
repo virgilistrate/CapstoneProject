@@ -2,6 +2,7 @@ package virgilistrate.CapstoneProject.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,9 +46,11 @@ public class SecurityConfig {
                 .requestMatchers("/vehicles/**").permitAll()
                 .requestMatchers("/public/**").permitAll()
 
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/consulente/**").hasRole("CONSULENTE")
+                .requestMatchers(HttpMethod.POST, "/orders/purchase").hasRole("CLIENT")
+                .requestMatchers(HttpMethod.GET, "/orders/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
 
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/profile/**").authenticated()
                 .requestMatchers("/favorites/**").authenticated()
                 .requestMatchers("/testdrives/**").authenticated()
@@ -70,7 +73,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 

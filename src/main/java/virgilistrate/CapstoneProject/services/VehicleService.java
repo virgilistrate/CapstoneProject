@@ -8,6 +8,7 @@ import virgilistrate.CapstoneProject.payloads.VehiclePatchDTO;
 import virgilistrate.CapstoneProject.repositories.*;
 import virgilistrate.CapstoneProject.specifications.VehicleSpecification;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class VehicleService {
             Long sedeId,
             Set<Long> optionalIds,
             Set<Long> imageIds,
-            Set<String> imageUrls
+            List<String> imageUrls
     ) {
         Brand brand = brandRepository.findById(brandId)
                 .orElseThrow(() -> new NotFoundException("Brand not found"));
@@ -78,23 +79,31 @@ public class VehicleService {
 
         if (imageIds != null && !imageIds.isEmpty()) {
             List<CarImage> existingImages = carImageRepository.findAllById(imageIds);
-            for (CarImage image : existingImages) {
+
+            for (int i = 0; i < existingImages.size(); i++) {
+                CarImage image = existingImages.get(i);
                 image.setVehicle(savedVehicle);
+                image.setDisplayOrder(i);
             }
-            carImageRepository.saveAll(existingImages);
-            savedVehicle.setImages(existingImages);
+
+            List<CarImage> savedExistingImages = carImageRepository.saveAll(existingImages);
+            savedVehicle.setImages(savedExistingImages);
         }
 
         if (imageUrls != null && !imageUrls.isEmpty()) {
-            List<CarImage> newImages = imageUrls.stream()
-                    .filter(url -> url != null && !url.isBlank())
-                    .map(url -> {
-                        CarImage image = new CarImage();
-                        image.setImageUrl(url.trim());
-                        image.setVehicle(savedVehicle);
-                        return image;
-                    })
-                    .toList();
+            List<CarImage> newImages = new ArrayList<>();
+
+            for (int i = 0; i < imageUrls.size(); i++) {
+                String url = imageUrls.get(i);
+
+                if (url != null && !url.isBlank()) {
+                    CarImage image = new CarImage();
+                    image.setImageUrl(url.trim());
+                    image.setDisplayOrder(i);
+                    image.setVehicle(savedVehicle);
+                    newImages.add(image);
+                }
+            }
 
             if (!newImages.isEmpty()) {
                 List<CarImage> savedImages = carImageRepository.saveAll(newImages);
@@ -110,9 +119,7 @@ public class VehicleService {
                 .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         if (dto.plateNumber() != null) vehicle.setPlateNumber(dto.plateNumber());
-        if (dto.sold() != null) {
-            vehicle.setSold(dto.sold());
-        }
+        if (dto.sold() != null) vehicle.setSold(dto.sold());
         if (dto.price() != null) vehicle.setPrice(dto.price());
         if (dto.yearOfConstruction() != null) vehicle.setYearOfConstruction(dto.yearOfConstruction());
         if (dto.kilometers() != null) vehicle.setKilometers(dto.kilometers());
@@ -172,11 +179,15 @@ public class VehicleService {
             }
 
             List<CarImage> selectedImages = carImageRepository.findAllById(dto.imageIds());
-            for (CarImage image : selectedImages) {
+
+            for (int i = 0; i < selectedImages.size(); i++) {
+                CarImage image = selectedImages.get(i);
                 image.setVehicle(vehicle);
+                image.setDisplayOrder(i);
             }
-            carImageRepository.saveAll(selectedImages);
-            vehicle.setImages(selectedImages);
+
+            List<CarImage> savedSelectedImages = carImageRepository.saveAll(selectedImages);
+            vehicle.setImages(savedSelectedImages);
         }
 
         if (dto.imageUrls() != null) {
@@ -185,18 +196,26 @@ public class VehicleService {
                 carImageRepository.deleteAll(currentImages);
             }
 
-            List<CarImage> newImages = dto.imageUrls().stream()
-                    .filter(url -> url != null && !url.isBlank())
-                    .map(url -> {
-                        CarImage image = new CarImage();
-                        image.setImageUrl(url.trim());
-                        image.setVehicle(vehicle);
-                        return image;
-                    })
-                    .toList();
+            List<CarImage> newImages = new ArrayList<>();
 
-            List<CarImage> savedImages = carImageRepository.saveAll(newImages);
-            vehicle.setImages(savedImages);
+            for (int i = 0; i < dto.imageUrls().size(); i++) {
+                String url = dto.imageUrls().get(i);
+
+                if (url != null && !url.isBlank()) {
+                    CarImage image = new CarImage();
+                    image.setImageUrl(url.trim());
+                    image.setDisplayOrder(i);
+                    image.setVehicle(vehicle);
+                    newImages.add(image);
+                }
+            }
+
+            if (!newImages.isEmpty()) {
+                List<CarImage> savedImages = carImageRepository.saveAll(newImages);
+                vehicle.setImages(savedImages);
+            } else {
+                vehicle.setImages(new ArrayList<>());
+            }
         }
 
         return vehicleRepository.save(vehicle);

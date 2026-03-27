@@ -2,6 +2,7 @@ package virgilistrate.CapstoneProject.payloads;
 
 import virgilistrate.CapstoneProject.enums.TractionType;
 
+import java.util.List;
 import java.util.Set;
 
 public record VehiclePatchDTO(
@@ -31,6 +32,6 @@ public record VehiclePatchDTO(
         Long sedeId,
         Set<Long> optionalIds,
         Set<Long> imageIds,
-        Set<String> imageUrls
+        List<String> imageUrls
 
 ) {}

@@ -3,6 +3,7 @@ package virgilistrate.CapstoneProject.payloads;
 import jakarta.validation.constraints.*;
 import virgilistrate.CapstoneProject.enums.TractionType;
 
+import java.util.List;
 import java.util.Set;
 
 public record VehicleDTO(
@@ -76,7 +77,7 @@ public record VehicleDTO(
 
         Set<Long> optionalIds,
         Set<Long> imageIds,
-        Set<String> imageUrls,
+        List<String> imageUrls,
         Set<Long> maintenanceIds
 
 ) {}

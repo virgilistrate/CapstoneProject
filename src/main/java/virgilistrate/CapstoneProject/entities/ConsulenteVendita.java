@@ -26,8 +26,6 @@ public class ConsulenteVendita {
     @JoinTable(name = "sede_id")
     private Sede sede;
 
-    @OneToMany(mappedBy = "consulente")
-    private List<Order> orders;
 
 
 }

@@ -26,5 +26,11 @@ public record UserDTO(
         @NotBlank(message = "Il numero di telefono è obbligatorio")
         String phoneNumber,
 
+        @NotBlank(message = "L'indirizzo è obbligatorio")
+        String indirizzo,
+
+        @NotBlank(message = "Il codice fiscale è obbligatorio")
+        String codiceFiscale,
+
         String role
 ) {}

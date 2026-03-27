@@ -10,7 +10,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CarImage {
 
     @Id
@@ -20,7 +19,8 @@ public class CarImage {
     @Column(nullable = false)
     private String imageUrl;
 
-
+    @Column(nullable = false)
+    private Integer displayOrder;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")

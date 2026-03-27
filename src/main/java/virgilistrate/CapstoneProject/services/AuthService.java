@@ -2,11 +2,14 @@ package virgilistrate.CapstoneProject.services;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import virgilistrate.CapstoneProject.entities.Client;
 import virgilistrate.CapstoneProject.entities.User;
 import virgilistrate.CapstoneProject.enums.Role;
 import virgilistrate.CapstoneProject.exceptions.UnauthorizedException;
 import virgilistrate.CapstoneProject.payloads.LoginDTO;
 import virgilistrate.CapstoneProject.payloads.UserDTO;
+import virgilistrate.CapstoneProject.repositories.ClientRepository;
 import virgilistrate.CapstoneProject.repositories.UserRepository;
 import virgilistrate.CapstoneProject.security.JWTSecret;
 
@@ -14,15 +17,23 @@ import virgilistrate.CapstoneProject.security.JWTSecret;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
     private final JWTSecret jwtSecret;
     private final PasswordEncoder bcrypt;
 
-    public AuthService(UserRepository userRepository, JWTSecret jwtSecret, PasswordEncoder bcrypt) {
+    public AuthService(
+            UserRepository userRepository,
+            ClientRepository clientRepository,
+            JWTSecret jwtSecret,
+            PasswordEncoder bcrypt
+    ) {
         this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
         this.jwtSecret = jwtSecret;
         this.bcrypt = bcrypt;
     }
 
+    @Transactional
     public User register(UserDTO body) {
 
         if (userRepository.existsByEmail(body.email())) {
@@ -37,7 +48,16 @@ public class AuthService {
         user.setPhoneNumber(body.phoneNumber());
         user.setRole(Role.CLIENT);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        Client client = new Client();
+        client.setUser(savedUser);
+        client.setIndirizzo(body.indirizzo());
+        client.setCodiceFiscale(body.codiceFiscale());
+
+        clientRepository.save(client);
+
+        return savedUser;
     }
 
     public String checkCredentialsAndGenerateToken(LoginDTO body) {

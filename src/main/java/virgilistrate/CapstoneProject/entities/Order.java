@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Order {
 
     @Id
@@ -27,8 +26,4 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
-
-    @ManyToOne
-    @JoinColumn(name = "consulente_id")
-    private ConsulenteVendita consulente;
 }
